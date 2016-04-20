@@ -5,18 +5,27 @@
  */
 package wordgame;
 
+import com.google.gson.Gson;
 import dictionar.TreeVocabulary;
 import dictionar.Vocabulary;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
 import serverwordgame.GameReprezentation;
 import serverwordgame.Player;
@@ -88,7 +97,7 @@ public class WordGame implements Runnable{
         try {
             PrintWriter writer=new PrintWriter(player.getSockPlayer().getOutputStream());
             
-            
+            System.out.println("caut..");
             if(checkWord(word))
             {  
                  String strTitles=getKStringTitles(word.length());
@@ -97,6 +106,7 @@ public class WordGame implements Runnable{
                      notifyPlayersGameFinished();
                      GameReprezentation reprezentation=new GameReprezentation(this);
                      reprezentation.makeReprezentation();
+                     reprezentation.uploadReprezentation();
                       System.out.println("am realizat reprezentarea");
                      finished=true;
                      return;
@@ -150,8 +160,42 @@ public class WordGame implements Runnable{
      */
     private boolean checkWord(String word)
     {
+        System.out.println("checking..");
+       String result=null; 
+       String singular=null;
+       String plural=null;
+       System.out.println(word);
+       String resource="http://openapi.ro/api/inflections/"+word+".json";
+        try {
+            String jparsed=readUrl(resource);
+            System.out.println(jparsed);
+        } catch (IOException ex) {
+            System.out.println("eroare.. "+ex.getMessage());
+        }
+       
+      
+        
         return word.equals("eee");
     }
+    
+    private static String readUrl(String urlString) throws MalformedURLException, IOException  {
+    BufferedReader reader = null;
+    try {
+        URL url = new URL(urlString);
+        reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        StringBuilder buffer = new StringBuilder();
+        int read;
+        char[] chars = new char[1024];
+        while ((read = reader.read(chars)) != -1)
+            buffer.append(chars, 0, read); 
+
+        return buffer.toString();
+    } finally {
+        if (reader != null)
+            reader.close();
+    }
+   }
+    
     public static void main(String[] args) {
         // TODO code application logic here
     }

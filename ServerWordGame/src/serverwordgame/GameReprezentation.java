@@ -13,6 +13,7 @@ import com.jcraft.jsch.SftpException;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,7 +39,7 @@ public class GameReprezentation {
     public GameReprezentation(WordGame game)
     {
         this.game=game;
-        fileReprezentation=new File("/home/tifuivali/NetBeansProjects/ServerWordGame/wordgame.html");
+        fileReprezentation=new File("/home/tifuivali/NetBeansProjects/Wordremote/ServerWordGame/wordgame.html");
     }
     
     public void makeReprezentation()
@@ -47,6 +48,7 @@ public class GameReprezentation {
         try {
              Document document=Jsoup.parse(fileReprezentation, "utf-8");
              Element body=document.body();
+             body.empty();
              body.append("<strong>Clasament:</strong>");
              for(int i=0;i<sortedPlayer.size();i++)
              {
@@ -57,18 +59,18 @@ public class GameReprezentation {
             FileUtils.writeStringToFile(fileReprezentation, document.outerHtml());
              
         } catch (IOException ex) {
-            System.out.println("Make reprezentation eror");
+            System.out.println("Make reprezentation eror.."+ex.getMessage());
         }
     }
     
-   public void uploadReprezentation(String url)
+   public void uploadReprezentation()
    {
        String user = "vali.tifui";
     String password = "adrianx16D";
     String host = "fenrir.info.uaic.ro";
     int port=22;
 
-    String remoteFile="sample.txt";
+    String remoteFile="/html/";
 
     try
     {
@@ -83,15 +85,10 @@ public class GameReprezentation {
         ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
         sftpChannel.connect();
         System.out.println("SFTP Channel created.");
-        InputStream out= null;
-    out= sftpChannel.get(remoteFile);
-        BufferedReader br = new BufferedReader(new InputStreamReader(out));
-        String line;
-        while ((line = br.readLine()) != null) 
-    {
-            System.out.println(line);
-        }
-    br.close();
+        String remotedir=sftpChannel.getHome();
+        remotedir+=remoteFile;
+        sftpChannel.put(new FileInputStream(fileReprezentation),remotedir+fileReprezentation.getName(),ChannelSftp.OVERWRITE);
+        sftpChannel.chmod(509, host);
         sftpChannel.disconnect();
         session.disconnect();
     }
