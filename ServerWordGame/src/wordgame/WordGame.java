@@ -6,6 +6,7 @@
 package wordgame;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dictionar.TreeVocabulary;
 import dictionar.Vocabulary;
 import java.io.BufferedReader;
@@ -83,6 +84,7 @@ public class WordGame implements Runnable{
     
     public synchronized void SubmitWord(Player player,String word)
     {
+        boolean corectWord=checkWord(word);
         while(!available)
         {           
                 try {
@@ -93,14 +95,13 @@ public class WordGame implements Runnable{
         }
         available=false;
         //cod sincronizat
-       
+        System.out.println(corectWord);
         try {
-            PrintWriter writer=new PrintWriter(player.getSockPlayer().getOutputStream());
-            
-            System.out.println("caut..");
-            if(checkWord(word))
+            if(corectWord)
             {  
-                 String strTitles=getKStringTitles(word.length());
+                System.out.flush();
+                 PrintWriter writer=new PrintWriter(player.getSockPlayer().getOutputStream());
+                 String strTitles=getSevenStringTitles();
                   if(strTitles.length()<=0)
                   {
                      notifyPlayersGameFinished();
@@ -118,10 +119,10 @@ public class WordGame implements Runnable{
                 writer.flush();
                 writer.println(player.getScore()+"");
                 writer.flush();
-                notifyPlayersWithMessage(player.getNume()+" submited.4 "+"Score:"+player.getScore());
-                
+                notifyPlayersWithMessage(player.getNume()+" submited."+"Score:"+player.getScore());
             }
             else {
+                PrintWriter writer=new PrintWriter(player.getSockPlayer().getOutputStream());
                 writer.println("notcorect");
                 writer.flush();
             }
@@ -152,6 +153,8 @@ public class WordGame implements Runnable{
                 PrintWriter writerNotify=new PrintWriter(player.getNotifySockPlayer().getOutputStream());
                 writerNotify.println("finish");
                 writerNotify.flush();
+                writerNotify.println("http://fenrir.info.uaic.ro/~vali.tifui/wordgame.html");
+                writerNotify.flush();
          }
     }
        
@@ -160,41 +163,48 @@ public class WordGame implements Runnable{
      */
     private boolean checkWord(String word)
     {
-        System.out.println("checking..");
-       String result=null; 
-       String singular=null;
-       String plural=null;
-       System.out.println(word);
-       String resource="http://openapi.ro/api/inflections/"+word+".json";
-        try {
-            String jparsed=readUrl(resource);
-            System.out.println(jparsed);
-        } catch (IOException ex) {
-            System.out.println("eroare.. "+ex.getMessage());
+        String singular="null";
+        try{
+            System.out.println("ajuns 1");
+           String continut=readUrl("http://openapi.ro/api/inflections/"+word+".json");
+           Gson gson=new Gson();
+           Map<String,Object> map=new HashMap<>();
+           map=(Map<String, Object>)gson.fromJson(continut, map.getClass());
+           singular=(String)map.get("singular");
+           System.out.println("singular "+singular);
+           
+          
+           
         }
-       
-      
+        catch(IOException | JsonSyntaxException ex)
+        {
+            System.out.println("exceptie api "+ex.getMessage());
+        }
+        if(singular==null)
+            return false;
+        return !singular.equals("null");
         
-        return word.equals("eee");
+        
+        
     }
     
-    private static String readUrl(String urlString) throws MalformedURLException, IOException  {
-    BufferedReader reader = null;
-    try {
-        URL url = new URL(urlString);
-        reader = new BufferedReader(new InputStreamReader(url.openStream()));
-        StringBuilder buffer = new StringBuilder();
-        int read;
-        char[] chars = new char[1024];
-        while ((read = reader.read(chars)) != -1)
-            buffer.append(chars, 0, read); 
 
-        return buffer.toString();
-    } finally {
-        if (reader != null)
-            reader.close();
-    }
-   }
+    
+    private  String readUrl(String urlString) throws MalformedURLException, IOException  {
+   
+        URL url = new URL(urlString);
+        StringBuilder builder=new StringBuilder();
+      
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null)
+                builder.append(inputLine);
+            in.close();
+            
+   
+        return builder.toString();
+     }
+   
     
     public static void main(String[] args) {
         // TODO code application logic here

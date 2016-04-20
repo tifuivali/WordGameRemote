@@ -1,11 +1,16 @@
 package clientwordgame;
 
 import gui.PlayerForm;
+import java.awt.Desktop;
 import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /*
@@ -34,9 +39,11 @@ public class PlayerNotify implements Runnable{
         try {
             BufferedReader reader=new BufferedReader(new InputStreamReader(notifySocket.getInputStream()));
             String strNotify="3";
+            String linkString="";
             while(!strNotify.equals("finish"))
             {
                 strNotify=reader.readLine();
+                
                 if(strNotify==null)
                     JOptionPane.showMessageDialog(player_ui, "Jocul s-a termnat!Serverul a fost oprit.",
                                                    "Finished",JOptionPane.INFORMATION_MESSAGE);
@@ -47,14 +54,18 @@ public class PlayerNotify implements Runnable{
                 }  
                 else{
                     player_ui.setSubmitButtonEnnabble(false);
+                    linkString=reader.readLine();
                     player.stopTimer();
-                    JOptionPane.showMessageDialog(player_ui, "Jocul s-a termnat! Vzitati ..pentru a putea vizualiza scorul",
+                    JOptionPane.showMessageDialog(player_ui, "Jocul s-a termnat! Vizualizati Scorul!",
                                                    "Finished",JOptionPane.INFORMATION_MESSAGE);
+                    Desktop.getDesktop().browse(new URI(linkString));
                     
                 }
             }
         } catch (IOException e) {
             System.out.println("Eroare read notify");
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(PlayerNotify.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

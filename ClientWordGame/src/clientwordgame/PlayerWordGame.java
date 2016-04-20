@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -60,18 +62,20 @@ public class PlayerWordGame {
     
     public void SubmitWord()
     {
-     
+     /*
         if(!checkLetters(player_ui.getWord()))
         {
             String message="Cuvantul contine litere nepermise";
             player_ui.getGameStatus().setText(message);
             return ;
         }
+        */
         try{
             PrintWriter writer=new PrintWriter(gameSocket.getOutputStream());
             BufferedReader reader=new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
             writer.println("submit");
             writer.flush();
+            Thread.sleep(30);
             writer.println(player_ui.getWord());
             writer.flush();
             String res=reader.readLine();
@@ -81,16 +85,18 @@ public class PlayerWordGame {
                 player_ui.getGameStatus().setText("Cuvantul este incorect!");
             else 
             {player_ui.getGameStatus().setText("Cuvant corect!");
-            res=reader.readLine();
-            player_ui.setTitles(res);
-            String score=reader.readLine();
-            player_ui.setScore(score);
+              res=reader.readLine();
+              player_ui.setTitles(res);
+              String score=reader.readLine();
+              player_ui.setScore(score);
             }
             
         }
        catch(IOException e)
         {
             JOptionPane.showMessageDialog(player_ui, "Eroare la submit.."+e.getMessage());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(PlayerWordGame.class.getName()).log(Level.SEVERE, null, ex);
         }
                 
                 
@@ -110,7 +116,6 @@ public class PlayerWordGame {
          for(int j=0;j<letters.length();j++)
              if(word.charAt(i)== letters.charAt(j))
                  ok=true;
-         System.out.println("valoare lui ok este " + ok);
          if(ok==false)
                return false;
            }

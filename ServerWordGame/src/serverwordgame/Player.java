@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import wordgame.WordGame;
 
 /**
@@ -40,7 +42,9 @@ public class Player implements Runnable{
             System.out.println("Nume:"+this.nume);
             while(!game.isFinished())
             {
+               System.out.println("Wait command.."); 
                String command=reader.readLine();
+                System.out.println("Primit comanda "+command);
                parseComand(command);
             }
         }
@@ -61,11 +65,11 @@ public class Player implements Runnable{
         }
     }
     
-    private void comandSubbmit()
+    private void comandSubbmit() 
     {
         try{
             BufferedReader reader=new BufferedReader(new InputStreamReader(getSockPlayer().getInputStream()));
-            PrintWriter writer=new PrintWriter(getSockPlayer().getOutputStream());
+           // PrintWriter writer=new PrintWriter(getSockPlayer().getOutputStream());
             String word=reader.readLine();
             game.SubmitWord(this, word);
             

@@ -39,18 +39,11 @@ public class LeterBag
     * @return titles  
     */
    
-   public synchronized Title[] getSevenRandomTitles()
+   public  Title[] getSevenRandomTitles()
    {
        
        
-       while(!available)
-       {
-           try{wait();}
-           catch(InterruptedException e){
-               System.err.println(e.getMessage());
-           }       
-       }
-       available=false;
+      
        //
       int k=0;
       List<Title> free_titles=new ArrayList<>();
@@ -75,10 +68,8 @@ public class LeterBag
           free_titles.remove(r);
           nrEelemente--;
       }
-      available=true;
-      notifyAll();
-      return titles;
-       
+      
+     return titles;
    }
    
    public synchronized Title[] getKRandomTitles(int k)
