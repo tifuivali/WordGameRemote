@@ -38,7 +38,16 @@ public class PlayerWordGame {
         timeKeeper.Start();
     }
     
-    
+    public void getAnotherTitles() throws IOException, InterruptedException
+    {
+        PrintWriter writer=new PrintWriter(gameSocket.getOutputStream());
+        writer.println("getanothertitles");
+        writer.flush();
+        BufferedReader reader=new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
+        player_ui.setTitles(reader.readLine());
+        String score=reader.readLine();
+        player_ui.setScore(score);
+    }
     
     public void sendNumeToRemote() throws IOException
     {
@@ -62,14 +71,14 @@ public class PlayerWordGame {
     
     public void SubmitWord()
     {
-     /*
+     
         if(!checkLetters(player_ui.getWord()))
         {
             String message="Cuvantul contine litere nepermise";
             player_ui.getGameStatus().setText(message);
             return ;
         }
-        */
+        
         try{
             PrintWriter writer=new PrintWriter(gameSocket.getOutputStream());
             BufferedReader reader=new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));

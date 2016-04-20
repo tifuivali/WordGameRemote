@@ -63,6 +63,10 @@ public class Player implements Runnable{
         {
             comandSubbmit();
         }
+        if(comand.equals("getanothertitles"))
+        {
+            comandGetAnotherTitles(this);
+        }
     }
     
     private void comandSubbmit() 
@@ -92,6 +96,37 @@ public class Player implements Runnable{
         try {
                 PrintWriter writer=new PrintWriter(sockPlayer.getOutputStream());
                 writer.println(game.getSevenStringTitles());
+                writer.flush();
+                
+               
+            }
+            catch(IOException ex)
+            {
+                System.out.println("Eroare get titles..");       
+            }
+    }
+    
+    private void comandGetAnotherTitles(Player player)
+    {
+        try {
+                PrintWriter writer=new PrintWriter(sockPlayer.getOutputStream());
+                String titlesString=game.getSevenStringTitles();
+                if(titlesString.length()<=0)
+                {
+                    game.notifyPlayersGameFinished();
+                     GameReprezentation reprezentation=new GameReprezentation(game);
+                     reprezentation.makeReprezentation();
+                     reprezentation.uploadReprezentation();
+                      System.out.println("am realizat reprezentarea");
+                     game.setFinished(true);
+                }
+                writer.println(titlesString);
+                writer.flush();
+                if(player.getScore()>7)
+                   player.setScore(player.getScore()-7); 
+                else player.setScore(0);
+                              
+                writer.println(player.getScore());
                 writer.flush();
                
             }

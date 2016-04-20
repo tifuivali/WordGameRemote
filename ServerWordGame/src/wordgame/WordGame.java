@@ -146,7 +146,7 @@ public class WordGame implements Runnable{
          }
     }
     
-    private void notifyPlayersGameFinished() throws IOException
+    public void notifyPlayersGameFinished() throws IOException
     {
         for(Player player:players)
         {
