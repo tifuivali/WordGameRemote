@@ -268,6 +268,10 @@ public class PlayerForm extends javax.swing.JFrame {
     {
         button_Submit.setEnabled(value);
     }
+    public String getTitles()
+    {
+        return text_titles.getText();
+    }
     Socket playerClientSocket;
     Socket playerNotifySocket;
     private void button_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_connectActionPerformed
@@ -289,12 +293,13 @@ public class PlayerForm extends javax.swing.JFrame {
             text_titles.setText(wordGamePlayer.getTitlesFromRemote());
             PlayerNotify playerNotify=new PlayerNotify(this, playerNotifySocket,wordGamePlayer);
             new Thread(playerNotify).start();
-            
+             setConectionButtonEnabble(false);
             
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Conectare esuata!","Eroare conectare",JOptionPane.ERROR_MESSAGE);
+         setConectionButtonEnabble(true);
         }
-        setConectionButtonEnabble(false);
+       
     }//GEN-LAST:event_button_connectActionPerformed
 
     private void button_SubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_SubmitActionPerformed

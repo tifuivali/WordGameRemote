@@ -2,6 +2,7 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+172.17.254.125 ip adress
  */
 package clientwordgame;
 
@@ -59,6 +60,13 @@ public class PlayerWordGame {
     
     public void SubmitWord()
     {
+     
+        if(!checkLetters(player_ui.getWord()))
+        {
+            String message="Cuvantul contine litere nepermise";
+            player_ui.getGameStatus().setText(message);
+            return ;
+        }
         try{
             PrintWriter writer=new PrintWriter(gameSocket.getOutputStream());
             BufferedReader reader=new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
@@ -88,6 +96,26 @@ public class PlayerWordGame {
                 
     }
     
+    private boolean checkLetters(String word)
+    {
+      word=word.toLowerCase();
+     String letters= player_ui.getTitles();
+     letters=letters.toLowerCase();
+     System.out.println(letters + ' ' + word);
+     
+     for(int i=0;i<word.length();i++)
+     {
+         Boolean ok=false;
+         
+         for(int j=0;j<letters.length();j++)
+             if(word.charAt(i)== letters.charAt(j))
+                 ok=true;
+         System.out.println("valoare lui ok este " + ok);
+         if(ok==false)
+               return false;
+           }
+     return true;
+    }
     public String getTitlesFromRemote()
     {
         String result=null;

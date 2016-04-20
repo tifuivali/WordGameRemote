@@ -37,6 +37,9 @@ public class PlayerNotify implements Runnable{
             while(!strNotify.equals("finish"))
             {
                 strNotify=reader.readLine();
+                if(strNotify==null)
+                    JOptionPane.showMessageDialog(player_ui, "Jocul s-a termnat!Serverul a fost oprit.",
+                                                   "Finished",JOptionPane.INFORMATION_MESSAGE);
                 if(strNotify.equals("message"))
                 {   
                     String message=reader.readLine();
