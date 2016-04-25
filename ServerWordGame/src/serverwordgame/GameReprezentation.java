@@ -61,7 +61,7 @@ public class GameReprezentation {
    public void uploadReprezentation()
    {
        String user = "vali.tifui";
-    String password = "adrianx16D";
+    String password = "********";
     String host = "fenrir.info.uaic.ro";
     int port=22;
 
